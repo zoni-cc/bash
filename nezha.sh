@@ -161,7 +161,7 @@ install_dashboard() {
             ;;
         esac
     fi
-
+    
     chmod 777 -R $NZ_DASHBOARD_PATH
 
     command -v docker >/dev/null 2>&1
@@ -184,11 +184,11 @@ install_dashboard() {
     fi
 }
 
-selinux() {
+selinux(){
     #判断当前的状态
     getenforce | grep '[Ee]nfor'
-    if [ $? -eq 0 ]; then
-        echo -e "SELinux是开启状态，正在关闭！"
+    if [ $? -eq 0 ];then
+        echo -e "SELinux是开启状态，正在关闭！" 
         setenforce 0 &>/dev/null
         find_key="SELINUX="
         sed -ri "/^$find_key/c${find_key}disabled" /etc/selinux/config
@@ -256,7 +256,7 @@ modify_agent_config() {
     if [ $# -lt 3 ]; then
         echo "请先在管理面板上添加Agent，记录下密钥" &&
             read -ep "请输入一个解析到面板所在IP的域名（不可套CDN）: " nz_grpc_host &&
-            read -ep "请输入面板RPC端口: (16800)" nz_grpc_port &&
+            read -ep "请输入面板RPC端口: (5555)" nz_grpc_port &&
             read -ep "请输入Agent 密钥: " nz_client_secret
         if [[ -z "${nz_grpc_host}" || -z "${nz_client_secret}" ]]; then
             echo -e "${red}所有选项都不能为空${plain}"
@@ -264,7 +264,7 @@ modify_agent_config() {
             return 1
         fi
         if [[ -z "${nz_grpc_port}" ]]; then
-            nz_grpc_port=16800
+            nz_grpc_port=5555
         fi
     else
         nz_grpc_host=$1
@@ -317,7 +317,7 @@ modify_dashboard_config() {
         read -ep "请输入 GitHub/Gitee 登录名作为管理员，多个以逗号隔开: " nz_admin_logins &&
         read -ep "请输入站点标题: " nz_site_title &&
         read -ep "请输入站点访问端口: (默认 8008)" nz_site_port &&
-        read -ep "请输入用于 Agent 接入的 RPC 端口: (默认 16800)" nz_grpc_port
+        read -ep "请输入用于 Agent 接入的 RPC 端口: (默认 5555)" nz_grpc_port
 
     if [[ -z "${nz_admin_logins}" || -z "${nz_github_oauth_client_id}" || -z "${nz_github_oauth_client_secret}" || -z "${nz_site_title}" ]]; then
         echo -e "${red}所有选项都不能为空${plain}"
@@ -329,7 +329,7 @@ modify_dashboard_config() {
         nz_site_port=8008
     fi
     if [[ -z "${nz_grpc_port}" ]]; then
-        nz_grpc_port=16800
+        nz_grpc_port=5555
     fi
     if [[ -z "${nz_oauth2_type}" ]]; then
         nz_oauth2_type=github
@@ -423,8 +423,8 @@ uninstall_dashboard() {
 
     cd $NZ_DASHBOARD_PATH && docker compose down
     rm -rf $NZ_DASHBOARD_PATH
-    docker rmi -f ghcr.io/naiba/nezha-dashboard >/dev/null 2>&1
-    docker rmi -f registry.cn-shanghai.aliyuncs.com/naibahq/nezha-dashboard >/dev/null 2>&1
+    docker rmi -f ghcr.io/naiba/nezha-dashboard > /dev/null 2>&1
+    docker rmi -f registry.cn-shanghai.aliyuncs.com/naibahq/nezha-dashboard > /dev/null 2>&1
     clean_all
 
     if [[ $# == 0 ]]; then
